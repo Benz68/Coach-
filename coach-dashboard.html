@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>מכבי דמו U18</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f5f7f6; --card:#ffffff; --line:#e7ece9; --text:#14201a; --muted:#6b7a72;
+    --green:#1fa35c; --green-d:#15864a; --green-soft:#e8f6ee;
+    --red:#e5484d; --red-soft:#fdecec; --amber:#f0a020; --amber-soft:#fff5e3;
+    --blue-soft:#eef4ff; --radius:16px; --shadow:0 1px 3px rgba(20,32,26,.06),0 4px 16px rgba(20,32,26,.04);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--text);font-size:15px}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  .app{display:flex;min-height:100vh}
+
+  /* ---------- sidebar ---------- */
+  .sidebar{width:220px;background:var(--card);border-left:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+  .brand{display:flex;align-items:center;gap:10px;padding:4px 8px 22px}
+  .logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#123a7a,#1f5bb8);color:#ffd84a;display:grid;place-items:center;font-weight:800;font-size:18px}
+  .brand b{font-size:17px;display:block}
+  .brand small{color:var(--muted);font-size:13px}
+  .nav-btn{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;font-size:16px;font-weight:500;color:var(--muted);text-align:right;width:100%}
+  .nav-btn svg{width:22px;height:22px;flex-shrink:0}
+  .nav-btn:hover{background:var(--bg);color:var(--text)}
+  .nav-btn.active{background:var(--green-soft);color:var(--green-d);font-weight:700}
+  .nav-btn .pill{margin-right:auto;background:var(--red);color:#fff;font-size:12px;font-weight:700;border-radius:20px;padding:1px 8px}
+  .sidebar .spacer{flex:1}
+
+  /* ---------- top bar ---------- */
+  .main{flex:1;min-width:0;display:flex;flex-direction:column}
+  .topbar{display:flex;align-items:center;gap:14px;padding:16px 28px;background:var(--card);border-bottom:1px solid var(--line)}
+  .topbar h1{font-size:22px;font-weight:700}
+  .topbar .grow{flex:1}
+  .ai-cta{display:flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-weight:600;padding:10px 18px;border-radius:12px;font-size:15px}
+  .ai-cta:hover{background:var(--green-d)}
+  .icon-btn{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;position:relative;color:var(--muted)}
+  .icon-btn:hover{background:var(--bg)}
+  .icon-btn .dot{position:absolute;top:8px;left:9px;width:9px;height:9px;border-radius:50%;background:var(--red);border:2px solid #fff}
+  .coach{display:flex;align-items:center;gap:10px}
+  .coach b{display:block;font-size:15px}
+  .coach small{color:var(--muted);font-size:13px}
+
+  .avatar{border-radius:50%;display:grid;place-items:center;font-weight:700;color:#fff;flex-shrink:0}
+
+  .content{padding:24px 28px 100px;flex:1}
+  .screen{display:none}
+  .screen.active{display:block}
+  .page-title{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .page-title h2{font-size:24px;font-weight:700}
+  .page-title .sub{color:var(--muted)}
+
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+  .card-h{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .card-h h3{font-size:18px;font-weight:700}
+  .card-h .grow{flex:1}
+
+  /* ---------- home ---------- */
+  .home-grid{display:grid;grid-template-columns:1fr 380px;gap:20px;align-items:start}
+  select{font-family:inherit;font-size:14px;padding:8px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--text)}
+  .chart-wrap svg{width:100%;height:auto;display:block}
+  .legend{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;margin-bottom:8px}
+  .legend i{width:22px;height:5px;border-radius:3px;background:var(--green)}
+
+  .chat{display:flex;flex-direction:column;gap:12px}
+  .msg{padding:14px 16px;border-radius:14px;line-height:1.6;font-size:14.5px}
+  .msg.bot{background:var(--green-soft)}
+  .msg.user{background:var(--bg);align-self:flex-start;max-width:85%}
+  .msg ul{padding-right:18px;margin:6px 0}
+  .msg time{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+  .chat-input{display:flex;gap:8px;margin-top:6px;border:1px solid var(--line);border-radius:12px;padding:6px 6px 6px 6px}
+  .chat-input input{flex:1;border:none;outline:none;font-family:inherit;font-size:14.5px;padding:6px 8px;background:transparent}
+  .chat-input button{width:38px;height:38px;border-radius:10px;background:var(--green);color:#fff;display:grid;place-items:center}
+  .quick{display:flex;flex-wrap:wrap;gap:6px}
+  .quick button{font-size:13px;padding:6px 12px;border-radius:20px;border:1px solid var(--line);background:#fff}
+  .quick button:hover{border-color:var(--green);color:var(--green-d)}
+
+  /* ---------- squad ---------- */
+  .tabs{display:inline-flex;background:var(--card);border-radius:12px;padding:4px;box-shadow:var(--shadow);margin-bottom:20px}
+  .tab{padding:9px 18px;border-radius:9px;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .tab.active{background:var(--green);color:#fff;font-weight:600}
+  .tab .count{background:var(--red);color:#fff;font-size:12px;border-radius:20px;padding:0 7px}
+  .tab.active .count{background:#fff;color:var(--red)}
+  .sub-screen{display:none}.sub-screen.active{display:block}
+
+  .pos-row{margin-bottom:22px}
+  .pos-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .pos-head h3{font-size:17px;font-weight:700}
+  .pos-head .n{background:var(--card);border:1px solid var(--line);border-radius:20px;font-size:13px;padding:1px 10px;color:var(--muted)}
+  .pos-head::after{content:"";flex:1;height:1px;background:var(--line)}
+  .players{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px}
+  .p-card{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:14px;min-width:200px;flex:0 0 200px;display:flex;flex-direction:column;gap:10px;border:2px solid transparent;text-align:right}
+  .p-card:hover{border-color:var(--green-soft)}
+  .p-card.warn{border-color:#f7dca6}
+  .p-top{display:flex;align-items:center;gap:10px}
+  .p-top b{display:block;font-size:15px}
+  .p-top small{color:var(--muted);font-size:13px}
+  .bar{height:7px;background:var(--line);border-radius:4px;overflow:hidden}
+  .bar i{display:block;height:100%;border-radius:4px}
+  .p-meta{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted)}
+  .p-meta b{color:var(--text);font-size:14px}
+  .chip{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:5px}
+  .chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+  .chip.ok{background:var(--green-soft);color:var(--green-d)}
+  .chip.att{background:var(--amber-soft);color:#b87400}
+  .chip.inj{background:var(--red-soft);color:var(--red)}
+
+  .att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .att-card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:14px}
+  .att-note{border-radius:12px;padding:12px 14px;border-right:4px solid}
+  .att-note b{display:block;margin-bottom:2px}
+  .att-note span{color:var(--muted);font-size:14px}
+  .att-note.red{background:var(--red-soft);border-color:var(--red)}
+  .att-note.amber{background:var(--amber-soft);border-color:var(--amber)}
+  .att-note.green{background:var(--green-soft);border-color:var(--green)}
+  .num-red{color:var(--red);font-weight:700}.num-green{color:var(--green-d);font-weight:700}
+
+  /* ---------- trainings ---------- */
+  .stat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:20px}
+  .stat b{font-size:30px;display:block}
+  .stat small{color:var(--muted)}
+  .stat .up{color:var(--green-d);font-weight:700}
+  .week{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+  .day h4{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:8px}
+  .session{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:12px;margin-bottom:8px;border-right:4px solid var(--green)}
+  .session b{display:block;font-size:14px}
+  .session small{color:var(--muted);font-size:12.5px}
+  .session.game{border-color:#1f5bb8}
+
+  /* ---------- tasks FAB ---------- */
+  .fab{position:fixed;left:28px;bottom:28px;width:62px;height:62px;border-radius:50%;background:var(--green);color:#fff;box-shadow:0 6px 20px rgba(31,163,92,.4);display:grid;place-items:center;z-index:30;transition:transform .15s}
+  .fab:hover{transform:scale(1.06)}
+  .fab .badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:12px;font-weight:700;min-width:22px;height:22px;border-radius:11px;display:grid;place-items:center;border:2px solid #fff}
+  .tasks-pop{position:fixed;left:28px;bottom:104px;width:340px;max-width:calc(100vw - 32px);background:var(--card);border-radius:var(--radius);box-shadow:0 12px 40px rgba(20,32,26,.18);padding:18px;z-index:30;display:none}
+  .tasks-pop.open{display:block}
+  .task{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer}
+  .task input{width:20px;height:20px;accent-color:var(--green);flex-shrink:0}
+  .task b{display:block;font-size:14.5px}
+  .task small{color:var(--muted);font-size:12.5px}
+  .task.done b{text-decoration:line-through;color:var(--muted)}
+
+  /* ---------- player modal ---------- */
+  .p-card,.att-card[data-num]{cursor:pointer;font-family:inherit;font-size:inherit;color:inherit}
+  .att-card[data-num]:hover{outline:2px solid var(--green-soft)}
+  .pm-overlay{position:fixed;inset:0;background:rgba(20,32,26,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .pm-overlay.open{display:flex}
+  .pm{background:var(--card);border-radius:20px;width:640px;max-width:100%;max-height:calc(100vh - 32px);overflow-y:auto;padding:28px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+  .pm-body{display:flex;flex-direction:column;gap:14px}
+  .pm-close{position:absolute;top:14px;left:14px;width:34px;height:34px;border-radius:50%;background:var(--bg);font-size:15px;color:var(--muted)}
+  .pm-close:hover{background:var(--line)}
+  .pm-head{display:flex;align-items:center;gap:16px}
+  .pm-head h3{font-size:22px}
+  .pm-head small{color:var(--muted)}
+  .pm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .pm-stats div{background:var(--bg);border-radius:12px;padding:10px 12px}
+  .pm-stats small{display:block;color:var(--muted);font-size:12.5px}
+  .pm-stats b{font-size:15px}
+  .pm-chart{background:var(--bg);border-radius:14px;padding:14px 14px 6px}
+  .pm-chart .legend{margin-bottom:4px}
+
+  /* ---------- mobile ---------- */
+  @media (max-width:900px){
+    .home-grid{grid-template-columns:1fr}
+    .week{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:720px){
+    .sidebar{position:fixed;bottom:0;top:auto;right:0;left:0;width:100%;height:auto;flex-direction:row;padding:6px;border-left:none;border-top:1px solid var(--line);z-index:20;justify-content:space-around}
+    .brand,.sidebar .spacer{display:none}
+    .nav-btn{flex-direction:column;gap:2px;font-size:12px;padding:8px;width:auto;flex:1;align-items:center}
+    .nav-btn .pill{display:none}
+    .topbar{padding:12px 16px;flex-wrap:wrap}
+    .topbar h1{font-size:18px}
+    .coach div,.ai-cta span{display:none}
+    .content{padding:16px 16px 130px}
+    .fab{bottom:84px;left:16px}
+    .tasks-pop{bottom:158px;left:16px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== Sidebar ===== -->
+  <nav class="sidebar">
+    <div class="brand">
+      <div class="logo">מד</div>
+      <div><b>מכבי דמו</b><small>U18</small></div>
+    </div>
+    <button class="nav-btn active" data-screen="home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      ראשי
+    </button>
+    <button class="nav-btn" data-screen="squad">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M16 4a4 4 0 0 1 0 8M22 21c0-3-1.5-5-4-5.7"/></svg>
+      סגל
+      <span class="pill">3</span>
+    </button>
+    <button class="nav-btn" data-screen="training">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      אימונים
+    </button>
+    <div class="spacer"></div>
+    <button class="nav-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      הגדרות
+    </button>
+  </nav>
+
+  <!-- ===== Main ===== -->
+  <div class="main">
+    <header class="topbar">
+      <h1 id="screenName">ראשי</h1>
+      <div class="grow"></div>
+      <button class="ai-cta" data-goto-ai>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.6L19.5 9.5l-5.7 1.9L12 17l-1.8-5.6L4.5 9.5l5.7-1.9zM19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9z"/></svg>
+        <span>שאל את עוזר ה-AI</span>
+      </button>
+      <button class="icon-btn" title="התראות">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+        <span class="dot"></span>
+      </button>
+      <div class="coach">
+        <div class="avatar" style="width:40px;height:40px;background:#3b4a42">נל</div>
+        <div><b>נועם לוי</b><small>מאמן ראשי</small></div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ===== HOME ===== -->
+      <section class="screen active" id="home">
+        <div class="home-grid">
+          <div class="card">
+            <div class="card-h">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.2" stroke-linecap="round"><path d="M4 20V14M10 20V9M16 20v-6M22 20V4"/></svg>
+              <h3>ביצועי הקבוצה החודש</h3>
+              <div class="grow"></div>
+              <select id="metric">
+                <option value="fit">כושר גופני</option>
+                <option value="speed">מהירות</option>
+                <option value="dist">מרחק ריצה</option>
+              </select>
+            </div>
+            <div class="legend"><i></i>ממוצע קבוצתי</div>
+            <div class="chart-wrap" id="chart"></div>
+          </div>
+
+          <div class="card" id="aiCard">
+            <div class="card-h">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--green)"><path d="M12 2l1.8 5.6L19.5 9.5l-5.7 1.9L12 17l-1.8-5.6L4.5 9.5l5.7-1.9zM19 15l.9 2.6 2.6.9-2.6.9L19 22l-.9-2.6-2.6-.9 2.6-.9z"/></svg>
+              <h3>עוזר AI</h3>
+            </div>
+            <div class="chat" id="chat">
+              <div class="msg user">שלום נועם, איך אפשר לעזור לך היום?</div>
+              <div class="msg bot">
+                <time>10:24</time>
+                מה ראיתי השבוע:
+                <ul>
+                  <li>נועם לוי השתפר ב־12% במהירות</li>
+                  <li>דניאל כהן ירד ב־18% במרחק הריצה</li>
+                  <li>3 שחקנים דורשים תשומת לב</li>
+                </ul>
+                <b>ההמלצה שלי:</b> לחזק את הכושר של דניאל כהן ולהוסיף אימוני סיבולת.
+              </div>
+              <div class="quick">
+                <button>מי לא מוכן למשחק?</button>
+                <button>תכנן אימון למחר</button>
+              </div>
+            </div>
+            <form class="chat-input" id="chatForm">
+              <input id="chatText" placeholder="כתוב שאלה...">
+              <button type="submit" title="שלח">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleX(-1)"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SQUAD ===== -->
+      <section class="screen" id="squad">
+        <div class="page-title">
+          <h2>הסגל</h2>
+          <span class="sub" id="squadCount"></span>
+        </div>
+        <div class="tabs">
+          <button class="tab active" data-sub="all">כל הסגל</button>
+          <button class="tab" data-sub="attention">דורשים תשומת לב <span class="count">3</span></button>
+        </div>
+
+        <div class="sub-screen active" id="sub-all"></div>
+
+        <div class="sub-screen" id="sub-attention">
+          <div class="att-grid">
+            <div class="att-card" data-num="10">
+              <div class="p-top"><div class="avatar" style="width:52px;height:52px;background:#c0504d">דכ</div><div><b>דניאל כהן</b><small>חלוץ · #10</small></div></div>
+              <div class="att-note red"><b>ירידה בכושר</b><span>מרחק ריצה <span class="num-red">‎-18%</span></span></div>
+            </div>
+            <div class="att-card" data-num="8">
+              <div class="p-top"><div class="avatar" style="width:52px;height:52px;background:#d08a1c">יב</div><div><b>יובל בר</b><small>קשר מרכזי · #8</small></div></div>
+              <div class="att-note amber"><b>ירידה בנתונים השבוע</b><span>כושר נמוך ועייפות במשחק</span></div>
+            </div>
+            <div class="att-card" data-num="11">
+              <div class="p-top"><div class="avatar" style="width:52px;height:52px;background:#2e8b57">נל</div><div><b>נועם לוי</b><small>כנף · #11</small></div></div>
+              <div class="att-note green"><b>שיפור משמעותי</b><span>מהירות מקסימלית <span class="num-green">+12%</span></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== TRAINING ===== -->
+      <section class="screen" id="training">
+        <div class="page-title"><h2>אימונים</h2><span class="sub">השבוע</span></div>
+        <div class="stat-row">
+          <div class="card stat"><small>אימונים השבוע</small><b>18</b><small><bdi class="up">+3</bdi> לעומת שבוע שעבר</small></div>
+          <div class="card stat"><small>נוכחות ממוצעת</small><b>91%</b><small>22 מתוך 24 שחקנים</small></div>
+        </div>
+        <div class="week" id="week"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===== Tasks FAB ===== -->
+<button class="fab" id="fab" title="משימות ומטרות">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+  <span class="badge" id="taskBadge">3</span>
+</button>
+<div class="tasks-pop" id="tasksPop">
+  <div class="card-h"><h3>משימות ומטרות</h3></div>
+  <label class="task"><input type="checkbox"><div><b>לשפר את הכושר הגופני</b><small>להעלות את ממוצע הכושר ל־75%</small></div></label>
+  <label class="task"><input type="checkbox"><div><b>מעקב אחרי דניאל כהן</b><small>לבדוק התקדמות בשבוע הבא</small></div></label>
+  <label class="task"><input type="checkbox"><div><b>ניתוח המשחק הבא</b><small>לצפות בווידאו ולהכין דגשים</small></div></label>
+</div>
+
+<!-- ===== Player modal ===== -->
+<div class="pm-overlay" id="playerModal">
+  <div class="pm">
+    <button class="pm-close" title="סגור">✕</button>
+    <div class="pm-body"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- navigation ---------- */
+const names = {home:'ראשי', squad:'סגל', training:'אימונים'};
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active', s.id===id));
+  document.querySelectorAll('.nav-btn[data-screen]').forEach(b=>b.classList.toggle('active', b.dataset.screen===id));
+  document.getElementById('screenName').textContent = names[id];
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav-btn[data-screen]').forEach(b=>b.onclick=()=>go(b.dataset.screen));
+document.querySelector('[data-goto-ai]').onclick=()=>{go('home');document.getElementById('chatText').focus();document.getElementById('aiCard').scrollIntoView({behavior:'smooth'});};
+
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active', x===t));
+  document.querySelectorAll('.sub-screen').forEach(s=>s.classList.toggle('active', s.id==='sub-'+t.dataset.sub));
+});
+
+/* ---------- chart ---------- */
+const series = {
+  fit:  [380,470,560,490,520,620,580,560,640,700,760,640,650,700,660,630,670,640,720,800,830,900,860,960,900,1000,1060,1100,1160,1200],
+  speed:[500,520,540,560,530,580,600,620,610,650,640,680,700,690,720,740,730,760,780,770,800,820,840,830,860,880,900,910,930,950],
+  dist: [900,880,860,900,920,870,850,880,910,940,900,860,880,920,950,980,960,940,970,1000,1020,990,1010,1040,1060,1030,1050,1080,1100,1120]
+};
+function drawChart(data, el='chart', o={}){
+  const W=700,H=o.h||280,pl=10,pr=40,pt=10,pb=30, max=o.max||Math.ceil(Math.max(...data)/300)*300||1200;
+  const min=o.min||0, col=o.color||'#1fa35c', gid='g_'+el, suf=o.suffix||'';
+  const x=i=>pl+(W-pl-pr)*i/(data.length-1), y=v=>pt+(H-pt-pb)*(1-(v-min)/(max-min));
+  const pts=data.map((v,i)=>[x(i),y(v)]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  let grid='';
+  for(let v=min;v<=max;v+=(max-min)/4){grid+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="#eef1ef"/><text x="${W-pr+8}" y="${y(v)+4}" font-size="12" fill="#8a978f">${v}${suf}</text>`;}
+  let lbl='';
+  [0,4,9,14,19,24,29].forEach(i=>lbl+=`<text x="${x(i)}" y="${H-8}" font-size="12" fill="#8a978f" text-anchor="middle">${i+1}</text>`);
+  document.getElementById(el).innerHTML=`<svg viewBox="0 0 ${W} ${H}">
+    <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".25"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></linearGradient></defs>
+    ${grid}${lbl}
+    <path d="${line} L${x(data.length-1)},${y(min)} L${x(0)},${y(min)} Z" fill="url(#${gid})"/>
+    <path d="${line}" fill="none" stroke="${col}" stroke-width="2.5" stroke-linejoin="round"/>
+    ${pts.filter((_,i)=>i%3===0||i===data.length-1).map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${col}" stroke="#fff" stroke-width="1.5"/>`).join('')}
+  </svg>`;
+}
+const metric=document.getElementById('metric');
+metric.onchange=()=>drawChart(series[metric.value]);
+drawChart(series.fit);
+
+/* ---------- chat (demo) ---------- */
+const chat=document.getElementById('chat');
+function ask(q){
+  const quick=chat.querySelector('.quick');
+  const u=document.createElement('div');u.className='msg user';u.textContent=q;chat.insertBefore(u,quick);
+  const b=document.createElement('div');b.className='msg bot';b.textContent='(הדגמה) כאן תופיע תשובת העוזר.';chat.insertBefore(b,quick);
+}
+document.getElementById('chatForm').onsubmit=e=>{e.preventDefault();const i=document.getElementById('chatText');if(i.value.trim()){ask(i.value.trim());i.value='';}};
+chat.querySelectorAll('.quick button').forEach(b=>b.onclick=()=>ask(b.textContent));
+
+/* ---------- squad ---------- */
+// [שם, מספר, כושר %, סטטוס, גובה ס"מ, משקל ק"ג, תפקיד בקבוצה, משפט תשומת לב (רק אם יש סיבה לדאגה)]
+const squad = [
+  {pos:'שוערים', players:[
+    ['אלון מזרחי',1,82,'ok',188,80,'שוער ראשון'],
+    ['עידו שפירא',23,76,'ok',185,77,'שוער מחליף']]},
+  {pos:'בלמים', players:[
+    ['אורי סלם',4,88,'ok',184,78,'בלם ימני · קפטן'],
+    ['רועי אזולאי',5,80,'ok',186,79,'בלם שמאלי'],
+    ['איתי גבאי',15,71,'inj',182,76,'בלם מחליף','פצוע בקרסול – לשמור על עומס נמוך ולעקוב אחרי תהליך השיקום לפני חזרה למשחק.']]},
+  {pos:'מגנים', players:[
+    ['עומר דהן',2,84,'ok',176,68,'מגן ימני'],
+    ['יונתן פרץ',3,79,'ok',175,67,'מגן שמאלי'],
+    ['אריאל חדד',12,74,'ok',174,66,'מגן מחליף']]},
+  {pos:'קשרים', players:[
+    ['יובל בר',8,62,'att',178,72,'קשר מרכזי','הכושר ירד השבוע ונראתה עייפות במשחק – כדאי להוסיף אימוני סיבולת ולבדוק שינה ותזונה.'],
+    ['תומר ביטון',6,83,'ok',180,73,'קשר אחורי'],
+    ['אסף לוין',14,77,'ok',177,70,'קשר התקפי'],
+    ['גיא עמר',16,80,'ok',179,71,'קשר מרכזי']]},
+  {pos:'כנפיים', players:[
+    ['נועם לוי',11,78,'ok',172,65,'כנף ימני'],
+    ['שחר אוחיון',7,81,'ok',173,66,'כנף שמאלי'],
+    ['אביב נחום',17,75,'ok',171,64,'כנף מחליף']]},
+  {pos:'חלוצים', players:[
+    ['דניאל כהן',10,85,'att',181,75,'חלוץ מרכזי','מרחק הריצה במשחקים ירד ב־18% – צריך לחזק סיבולת ולהקפיד על התאוששות בין אימונים.'],
+    ['מתן רוזן',9,82,'ok',183,77,'חלוץ'],
+    ['ליאור קליין',19,73,'ok',176,70,'חלוץ מחליף']]}
+];
+const statusTxt={ok:'תקין',att:'דורש תשומת לב',inj:'פצוע'};
+const colors=['#2e8b57','#3b6fb6','#8a5cc2','#c0504d','#d08a1c','#2a8c8c','#6b7a3a'];
+const initials=n=>n.split(' ').map(w=>w[0]).join('');
+let total=0;
+document.getElementById('sub-all').innerHTML = squad.map(g=>{
+  total+=g.players.length;
+  return `<div class="pos-row">
+    <div class="pos-head"><h3>${g.pos}</h3><span class="n">${g.players.length}</span></div>
+    <div class="players">${g.players.map(([n,num,fit,st],i)=>{
+      const c=fit>=80?'var(--green)':fit>=70?'#7cc49a':'var(--amber)';
+      return `<button class="p-card ${st!=='ok'?'warn':''}" data-num="${num}">
+        <div class="p-top"><div class="avatar" style="width:44px;height:44px;background:${colors[(num+i)%colors.length]}">${initials(n)}</div>
+          <div><b>${n}</b><small>#${num}</small></div></div>
+        <div class="p-meta"><span>כושר גופני</span><b>${fit}%</b></div>
+        <div class="bar"><i style="width:${fit}%;background:${c}"></i></div>
+        <div><span class="chip ${st}">${statusTxt[st]}</span></div>
+      </button>`}).join('')}</div>
+  </div>`;
+}).join('');
+/* ---------- player card (modal) ---------- */
+const byNum={};
+squad.forEach(g=>g.players.forEach(p=>byNum[p[1]]=p));
+const modal=document.getElementById('playerModal');
+// נתוני דמו: 30 ימים שמסתיימים בכושר הנוכחי. שחקן תקין – מגמת עלייה, דורש תשומת לב/פצוע – ירידה בסוף
+function playerSeries(no,fit,st){
+  let seed=no*97; const rnd=()=>((seed=(seed*9301+49297)%233280)/233280-.5);
+  const start= st==='ok' ? fit-10 : fit+12;
+  return Array.from({length:30},(_,i)=>{
+    let base = st==='inj' && i>=22 ? fit+ (29-i)*1.2 : start+(fit-start)*i/29;
+    return Math.max(0,Math.min(100,Math.round(i===29?fit:base+rnd()*6)));
+  });
+}
+function openPlayer(num){
+  const [n,no,fit,st,h,w,role,note]=byNum[num];
+  const c=fit>=80?'var(--green)':fit>=70?'#7cc49a':'var(--amber)';
+  const chartCol=st==='inj'?'#e5484d':st==='att'?'#f0a020':'#1fa35c';
+  modal.querySelector('.pm-body').innerHTML=`
+    <div class="pm-head">
+      <div class="avatar" style="width:72px;height:72px;font-size:24px;background:${colors[(no)%colors.length]}">${initials(n)}</div>
+      <div><h3>${n}</h3><small>#${no} · ${role}</small><div style="margin-top:6px"><span class="chip ${st}">${statusTxt[st]}</span></div></div>
+    </div>
+    <div class="pm-stats">
+      <div><small>גובה</small><b>${h} ס״מ</b></div>
+      <div><small>משקל</small><b>${w} ק״ג</b></div>
+      <div><small>תפקיד</small><b>${role}</b></div>
+    </div>
+    <div class="p-meta"><span>כושר גופני</span><b>${fit}%</b></div>
+    <div class="bar" style="height:10px"><i style="width:${fit}%;background:${c}"></i></div>
+    <div class="pm-chart">
+      <div class="legend"><i style="background:${chartCol}"></i>כושר גופני – 30 הימים האחרונים</div>
+      <div id="playerChart"></div>
+    </div>
+    ${note?`<div class="att-note ${st==='inj'?'red':'amber'}"><b>במה לשים לב</b><span>${note}</span></div>`:''}`;
+  drawChart(playerSeries(no,fit,st),'playerChart',{min:40,max:100,suffix:'%',h:240,color:chartCol});
+  modal.classList.add('open');
+}
+document.addEventListener('click',e=>{
+  const card=e.target.closest('[data-num]');
+  if(card) openPlayer(+card.dataset.num);
+});
+modal.onclick=e=>{if(e.target===modal||e.target.closest('.pm-close'))modal.classList.remove('open');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')modal.classList.remove('open');});
+
+document.getElementById('squadCount').innerHTML = total+' שחקנים פעילים · <bdi class="num-green">+2</bdi> לעומת החודש שעבר';
+
+/* ---------- training week ---------- */
+const week=[
+  ['ראשון',[['אימון כושר','17:00 · 90 דק׳'],['אימון שוערים','16:00 · 45 דק׳']]],
+  ['שני',[['טקטיקה – הגנה','17:00 · 90 דק׳'],['חדר כושר','19:00 · 60 דק׳'],['שיחת וידאו','20:15 · 30 דק׳']]],
+  ['שלישי',[['מהירות וזריזות','17:00 · 75 דק׳'],['אימון שוערים','16:00 · 45 דק׳'],['שיקום','18:30 · 40 דק׳']]],
+  ['רביעי',[['משחק פנימי','17:00 · 90 דק׳'],['חדר כושר','19:00 · 60 דק׳'],['מצבים נייחים','18:40 · 30 דק׳']]],
+  ['חמישי',[['טקטיקה – התקפה','17:00 · 90 דק׳'],['אימון שוערים','16:00 · 45 דק׳'],['שחרור','18:40 · 30 דק׳']]],
+  ['שישי',[['⚽ משחק ליגה','11:00 · נגד הפועל דמו',1],['שחרור','14:00 · 30 דק׳'],['שיקום','15:00 · 40 דק׳']]]
+];
+document.getElementById('week').innerHTML=week.map(([d,s])=>`<div class="day"><h4>${d}</h4>${s.map(([t,m,g])=>`<div class="session ${g?'game':''}"><b>${t}</b><small>${m}</small></div>`).join('')}</div>`).join('');
+
+/* ---------- tasks ---------- */
+const fab=document.getElementById('fab'), pop=document.getElementById('tasksPop'), badge=document.getElementById('taskBadge');
+fab.onclick=e=>{e.stopPropagation();pop.classList.toggle('open');};
+pop.onclick=e=>e.stopPropagation();
+document.addEventListener('click',()=>pop.classList.remove('open'));
+pop.querySelectorAll('.task input').forEach(cb=>cb.onchange=()=>{
+  cb.closest('.task').classList.toggle('done',cb.checked);
+  const open=[...pop.querySelectorAll('.task input')].filter(c=>!c.checked).length;
+  badge.textContent=open; badge.style.display=open?'grid':'none';
+});
+</script>
+</body>
+</html>
